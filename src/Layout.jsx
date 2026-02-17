@@ -4,17 +4,20 @@ import Sidebar from "./components/Sidebar"
 
 const styles = {
   layout: `
+    h-screen
+    overflow-hidden
     bg-[#F4F4F4]
-    min-h-screen
   `,
   body: `
     flex
+    h-full
   `,
   main: `
     flex-1
     mt-16
+    h-[calc(100vh-4rem)]
+    overflow-y-auto
     p-4 sm:p-6 md:p-8
-    transition-all duration-300
   `
 }
 

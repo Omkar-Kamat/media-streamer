@@ -1,4 +1,5 @@
-import React from "react"
+import React, { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
 
 const styles = {
   navbar: `
@@ -76,33 +77,58 @@ const styles = {
 }
 
 const Navbar = () => {
+
+  const [query, setQuery] = useState("")
+  const navigate = useNavigate()
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+
+    const trimmed = query.trim()
+
+    if (!trimmed) return
+
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`)
+  }
+
   return (
     <div className={styles.navbar}>
       
       <div className={styles.leftSection}>
-        <div className={styles.logo}>
-          StreamX
-        </div>
+        <Link to="/" className={styles.logo}>
+          StreamHub
+        </Link>
       </div>
 
-      <div className={styles.centerSection}>
+      <form
+        className={styles.centerSection}
+        onSubmit={handleSearch}
+      >
         <div className={styles.searchContainer}>
+          
           <input
             type="text"
             placeholder="Search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className={styles.searchInput}
           />
-          <button className={styles.searchButton}>
+
+          <button
+            type="submit"
+            className={styles.searchButton}
+          >
             Search
           </button>
+
         </div>
-      </div>
+      </form>
 
       <div className={styles.rightSection}>
-        <button className={styles.uploadButton}>
+        <Link to="/upload" className={styles.uploadButton}>
           Upload
-        </button>
-        <div className={styles.profileButton}></div>
+        </Link>
+        <Link to="/profile" className={styles.profileButton}></Link>
       </div>
 
     </div>

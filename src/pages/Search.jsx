@@ -1,10 +1,17 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import VideoGrid from "../components/VideoGrid"
 
 const styles = {
   container: `
     w-full
     min-h-full
+  `,
+  heading: `
+    text-[#0C2B4E]
+    text-lg
+    font-semibold
+    mb-6
   `,
   error: `
     text-red-600
@@ -13,7 +20,10 @@ const styles = {
   `
 }
 
-export default function Home() {
+export default function Search() {
+
+  const [searchParams] = useSearchParams()
+  const query = searchParams.get("q")
 
   const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(true)
@@ -21,28 +31,35 @@ export default function Home() {
 
   useEffect(() => {
 
-    const fetchVideos = async () => {
+    if (!query) {
+      setVideos([])
+      setLoading(false)
+      return
+    }
+
+    const fetchSearchResults = async () => {
 
       try {
 
         setLoading(true)
+        setError(null)
 
         const res = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&maxResults=16&key=${import.meta.env.VITE_YT_API_KEY}`
+          `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=24&q=${query}&key=${import.meta.env.VITE_YT_API_KEY}`
         )
 
         const data = await res.json()
 
         if (!res.ok) {
-          throw new Error(data.error?.message || "API error")
+          throw new Error(data.error?.message || "Search failed")
         }
 
         const formattedVideos = data.items.map(video => ({
-          id: video.id,
-          channelTitle: video.snippet.channelTitle,
+          id: video.id.videoId,
           videoTitle: video.snippet.title,
+          channelTitle: video.snippet.channelTitle,
           thumbnail: video.snippet.thumbnails.high.url,
-          viewCount: video.statistics?.viewCount || "0"
+          viewCount: ""
         }))
 
         setVideos(formattedVideos)
@@ -58,12 +75,18 @@ export default function Home() {
       }
     }
 
-    fetchVideos()
+    fetchSearchResults()
 
-  }, [])
+  }, [query])
 
   return (
     <div className={styles.container}>
+
+      {query && (
+        <div className={styles.heading}>
+          Search results for "{query}"
+        </div>
+      )}
 
       {error && (
         <div className={styles.error}>
