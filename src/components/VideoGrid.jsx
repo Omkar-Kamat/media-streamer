@@ -4,32 +4,42 @@ import ShimmerCard from "./ShimmerCard"
 
 const styles = {
   grid: `
+    w-full
     grid
     grid-cols-1
     sm:grid-cols-2
     md:grid-cols-3
     lg:grid-cols-4
-    gap-6
-    w-full
+    gap-x-6
+    gap-y-8
+    transition-all duration-300
+  `,
+
+  item: `
+    transform
+    transition-transform duration-200
   `
 }
 
 export default function VideoGrid({ videos, loading }) {
 
+  const items = loading
+    ? Array(12).fill(null)
+    : videos
+
   return (
     <div className={styles.grid}>
 
-      {loading
-        ? Array(12).fill(0).map((_, index) => (
-            <ShimmerCard key={index} />
-          ))
-        : videos.map(video => (
-            <VideoCard
-              key={video.id}
-              video={video}
-            />
-          ))
-      }
+      {items.map((video, index) => (
+        <div key={video?.id || index} className={styles.item}>
+          
+          {loading
+            ? <ShimmerCard />
+            : <VideoCard video={video} />
+          }
+
+        </div>
+      ))}
 
     </div>
   )

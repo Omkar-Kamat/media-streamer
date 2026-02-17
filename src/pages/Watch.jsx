@@ -6,57 +6,126 @@ const styles = {
     w-full
     grid
     grid-cols-1
-    lg:grid-cols-[1fr_320px]
+    lg:grid-cols-[1fr_360px]
     gap-6
   `,
+
   playerSection: `
     flex flex-col
     w-full
   `,
-  iframe: `
+
+  playerFrame: `
     w-full
     aspect-video
-    rounded-lg
+    rounded-xl
+    overflow-hidden
+    bg-[#0C2B4E]
+    border border-[#1A3D64]
+    shadow-lg shadow-[#0C2B4E]/40
   `,
+
+  iframe: `
+    w-full
+    h-full
+  `,
+
+  metaCard: `
+    mt-4
+    bg-[#F4F4F4]
+    rounded-xl
+    p-4
+    shadow-md shadow-[#0C2B4E]/10
+  `,
+
   title: `
     text-[#0C2B4E]
     text-lg
     font-semibold
-    mt-4
+    leading-snug
   `,
+
   channelRow: `
     flex items-center
     gap-3
-    mt-3
+    mt-4
   `,
+
   profileImage: `
     w-10 h-10
     rounded-full
     object-cover
+    border border-[#1A3D64]
   `,
+
   channelName: `
     text-[#1D546C]
     text-sm
     font-medium
   `,
+
+  description: `
+    text-[#1D546C]
+    text-sm
+    mt-3
+    leading-relaxed
+    line-clamp-4
+  `,
+
   sidebar: `
     hidden lg:flex
     flex-col
     gap-4
   `,
-  shimmerBox: `
+
+  recommendationCard: `
+    flex gap-3
+    bg-[#F4F4F4]
+    rounded-xl
+    p-2
+    shadow-md shadow-[#0C2B4E]/10
+    cursor-pointer
+  `,
+
+  recThumbnail: `
+    w-40
+    aspect-video
+    rounded-lg
+    bg-[#1A3D64]
+  `,
+
+  recMeta: `
+    flex flex-col
+    justify-between
+    flex-1
+    py-1
+  `,
+
+  recTitleShimmer: `
+    h-4
+    bg-[#1D546C]
+    rounded
+    animate-pulse
+    w-full
+  `,
+
+  recChannelShimmer: `
+    h-3
+    bg-[#1D546C]
+    rounded
+    animate-pulse
+    w-2/3
+    mt-2
+  `,
+
+  shimmerFrame: `
     w-full
     aspect-video
     bg-[#1A3D64]
     animate-pulse
-    rounded-lg
+    rounded-xl
   `,
-  shimmerCircle: `
-    w-10 h-10
-    rounded-full
-    bg-[#1D546C]
-    animate-pulse
-  `,
+
   shimmerTextLarge: `
     h-5
     bg-[#1D546C]
@@ -65,18 +134,19 @@ const styles = {
     mt-4
     animate-pulse
   `,
+
+  shimmerCircle: `
+    w-10 h-10
+    rounded-full
+    bg-[#1D546C]
+    animate-pulse
+  `,
+
   shimmerTextSmall: `
     h-4
     bg-[#1D546C]
     rounded
     w-1/2
-    animate-pulse
-  `,
-  shimmerSidebarItem: `
-    w-full
-    h-24
-    bg-[#1A3D64]
-    rounded-lg
     animate-pulse
   `
 }
@@ -116,13 +186,10 @@ export default function Watch() {
 
         setVideoDetails({
           title: video.snippet.title,
+          description: video.snippet.description,
           channelTitle: video.snippet.channelTitle,
           channelImage: channel.snippet.thumbnails.default.url
         })
-
-      } catch (err) {
-
-        console.error(err)
 
       } finally {
 
@@ -135,6 +202,15 @@ export default function Watch() {
 
   }, [id])
 
+  const embedUrl =
+    `https://www.youtube.com/embed/${id}` +
+    `?controls=1` +
+    `&autoplay=1`+
+    `&color=white` +
+    `&rel=0` +
+    `&playsinline=1` +
+    `&iv_load_policy=3`
+
   return (
     <div className={styles.container}>
 
@@ -142,35 +218,48 @@ export default function Watch() {
 
         {loading ? (
           <>
-            <div className={styles.shimmerBox}></div>
-            <div className={styles.shimmerTextLarge}></div>
+            <div className={styles.shimmerFrame}></div>
 
-            <div className={styles.channelRow}>
-              <div className={styles.shimmerCircle}></div>
-              <div className={styles.shimmerTextSmall}></div>
+            <div className={styles.metaCard}>
+              <div className={styles.shimmerTextLarge}></div>
+
+              <div className={styles.channelRow}>
+                <div className={styles.shimmerCircle}></div>
+                <div className={styles.shimmerTextSmall}></div>
+              </div>
             </div>
           </>
         ) : (
           <>
-            <iframe
-              className={styles.iframe}
-              src={`https://www.youtube.com/embed/${id}`}
-              allowFullScreen
-            />
-
-            <div className={styles.title}>
-              {videoDetails?.title}
+            <div className={styles.playerFrame}>
+              <iframe
+                className={styles.iframe}
+                src={embedUrl}
+                allowFullScreen
+              />
             </div>
 
-            <div className={styles.channelRow}>
-              
-              <img
-                src={videoDetails?.channelImage}
-                className={styles.profileImage}
-              />
+            <div className={styles.metaCard}>
 
-              <div className={styles.channelName}>
-                {videoDetails?.channelTitle}
+              <div className={styles.title}>
+                {videoDetails?.title}
+              </div>
+
+              <div className={styles.channelRow}>
+                
+                <img
+                  src={videoDetails?.channelImage}
+                  className={styles.profileImage}
+                />
+
+                <div className={styles.channelName}>
+                  {videoDetails?.channelTitle}
+                </div>
+
+              </div>
+
+              <div className={styles.description}>
+                {videoDetails?.description}
               </div>
 
             </div>
@@ -180,9 +269,20 @@ export default function Watch() {
       </div>
 
       <div className={styles.sidebar}>
+
         {Array(8).fill(0).map((_, index) => (
-          <div key={index} className={styles.shimmerSidebarItem}></div>
+          <div key={index} className={styles.recommendationCard}>
+
+            <div className={styles.recThumbnail}></div>
+
+            <div className={styles.recMeta}>
+              <div className={styles.recTitleShimmer}></div>
+              <div className={styles.recChannelShimmer}></div>
+            </div>
+
+          </div>
         ))}
+
       </div>
 
     </div>

@@ -5,57 +5,72 @@ const styles = {
   sidebar: `
     mt-16
     h-[calc(100vh-4rem)]
-    bg-[#0C2B4E]
-    border-r border-[#1A3D64]
+    bg-gradient-to-b from-[#0C2B4E] to-[#0A2542]
+    shadow-lg shadow-[#0C2B4E]/40
     flex flex-col
     transition-all duration-300
     flex-shrink-0
   `,
+
   expanded: `
     w-56 sm:w-64
   `,
+
   collapsed: `
-    w-14
+    w-16
   `,
+
   toggleContainer: `
     flex items-center justify-end
     h-14
     px-3
   `,
+
   toggleButton: `
     text-[#F4F4F4]
-    hover:bg-[#1A3D64]
+    bg-[#1A3D64]/40
+    hover:bg-[#1D546C]
+    hover:shadow-md hover:shadow-[#0C2B4E]/40
     px-2 py-1
-    rounded
+    rounded-lg
     cursor-pointer
-    transition
+    transition-all duration-200
   `,
+
   tabContainer: `
     flex flex-col
-    mt-2
+    mt-3
     gap-1
     px-2
   `,
+
   tab: `
     flex items-center
     px-3 py-3
-    rounded-lg
+    rounded-xl
     text-[#F4F4F4]
-    hover:bg-[#1D546C]
+    hover:bg-[#1A3D64]
+    hover:shadow-md hover:shadow-[#0C2B4E]/30
     cursor-pointer
-    transition
+    transition-all duration-200
     whitespace-nowrap
     overflow-hidden
   `,
+
   activeTab: `
-    bg-[#1D546C]
+    bg-[#1A3D64]
+    shadow-inner shadow-black/30
   `,
+
   label: `
     text-sm font-medium
+    tracking-wide
   `,
+
   hiddenLabel: `
     hidden
   `,
+
   visibleLabel: `
     block
   `
@@ -68,7 +83,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const tabs = [
     { name: "Home", path: "/" },
     { name: "Trending", path: "/trending" },
-    { name: "Watch", path: "/watch/:id" },
     { name: "Upload", path: "/upload" },
     { name: "Profile", path: "/profile" }
   ]

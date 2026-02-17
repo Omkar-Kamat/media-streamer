@@ -5,11 +5,13 @@ const styles = {
   container: `
     w-full
     min-h-full
+    bg-[#F4F4F4]
   `,
   error: `
     text-red-600
     text-lg
     font-medium
+    px-4 py-2
   `
 }
 
