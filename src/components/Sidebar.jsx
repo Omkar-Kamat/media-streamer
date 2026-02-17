@@ -67,8 +67,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const tabs = [
     { name: "Home", path: "/" },
-    { name: "Trending", path: "/" },
-    { name: "Watch", path: "/" },
+    { name: "Trending", path: "/trending" },
+    { name: "Watch", path: "/watch/:id" },
     { name: "Upload", path: "/upload" },
     { name: "Profile", path: "/profile" }
   ]
