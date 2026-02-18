@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
+import useRelatedVideos from "../hooks/useRelatedVideo"
 
 const WATCH_HISTORY_KEY = "streamhub_watch_history"
 const MAX_HISTORY = 50
@@ -87,20 +88,36 @@ const styles = {
     rounded-xl
     p-2
     shadow-md shadow-[#0C2B4E]/10
+    hover:shadow-lg hover:shadow-[#0C2B4E]/20
+    transition-all duration-200
+    cursor-pointer
   `,
 
   recThumbnail: `
     w-40
     aspect-video
     rounded-lg
+    object-cover
     bg-[#1A3D64]
   `,
 
   recMeta: `
     flex flex-col
-    justify-between
+    justify-center
     flex-1
-    py-1
+  `,
+
+  recTitle: `
+    text-[#0C2B4E]
+    text-sm
+    font-medium
+    line-clamp-2
+  `,
+
+  recChannel: `
+    text-[#1D546C]
+    text-xs
+    mt-1
   `,
 
   recTitleShimmer: `
@@ -160,6 +177,9 @@ export default function Watch() {
   const [videoDetails, setVideoDetails] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const { videos: relatedVideos, loading: relatedLoading } =
+    useRelatedVideos(videoDetails?.title)
+
   const saveWatchHistory = (video, channelImage) => {
 
     if (!video) return
@@ -205,10 +225,8 @@ export default function Watch() {
 
         const video = videoData.items[0]
 
-        const channelId = video.snippet.channelId
-
         const channelRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${import.meta.env.VITE_YT_API_KEY}`
+          `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${video.snippet.channelId}&key=${import.meta.env.VITE_YT_API_KEY}`
         )
 
         const channelData = await channelRes.json()
@@ -309,20 +327,50 @@ export default function Watch() {
 
       <div className={styles.sidebar}>
 
-        {Array(8).fill(0).map((_, index) => (
+        {relatedLoading
+          ? Array(6).fill(0).map((_, index) => (
 
-          <div key={index} className={styles.recommendationCard}>
+              <div key={index} className={styles.recommendationCard}>
 
-            <div className={styles.recThumbnail}></div>
+                <div className={styles.recThumbnail}></div>
 
-            <div className={styles.recMeta}>
-              <div className={styles.recTitleShimmer}></div>
-              <div className={styles.recChannelShimmer}></div>
-            </div>
+                <div className={styles.recMeta}>
+                  <div className={styles.recTitleShimmer}></div>
+                  <div className={styles.recChannelShimmer}></div>
+                </div>
 
-          </div>
+              </div>
 
-        ))}
+            ))
+          : relatedVideos.map(video => (
+
+              <Link
+                key={video.id}
+                to={`/watch/${video.id}`}
+                className={styles.recommendationCard}
+              >
+
+                <img
+                  src={video.thumbnail}
+                  className={styles.recThumbnail}
+                />
+
+                <div className={styles.recMeta}>
+
+                  <div className={styles.recTitle}>
+                    {video.videoTitle}
+                  </div>
+
+                  <div className={styles.recChannel}>
+                    {video.channelTitle}
+                  </div>
+
+                </div>
+
+              </Link>
+
+            ))
+        }
 
       </div>
 
