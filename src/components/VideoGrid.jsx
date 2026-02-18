@@ -30,8 +30,8 @@ export default function VideoGrid({ videos, loading }) {
   return (
     <div className={styles.grid}>
 
-      {items.map((video, index) => (
-        <div key={video?.id || index} className={styles.item}>
+      {items.map((video) => (
+        <div key={video?.id} className={styles.item}>
           
           {loading
             ? <ShimmerCard />

@@ -6,6 +6,7 @@ import Profile from "./pages/Profile"
 import Search from "./pages/Search"
 import { Route, Routes } from 'react-router-dom'
 import Trending from "./pages/Trending"
+import WatchHistory from "./pages/WatchHistory"
 export default function App() {
   return (
     <Layout>
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/upload" element={<Upload/>}/>
         <Route path="/profile" element={<Profile/>}/>
         <Route path="/search" element={<Search/>}/>
+        <Route path="/watch-history" element={<WatchHistory/>}/>
       </Routes>
     </Layout>
   )

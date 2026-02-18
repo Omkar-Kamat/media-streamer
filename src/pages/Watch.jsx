@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { useParams } from "react-router-dom"
 
+const WATCH_HISTORY_KEY = "streamhub_watch_history"
+const MAX_HISTORY = 50
+
 const styles = {
   container: `
     w-full
@@ -84,7 +87,6 @@ const styles = {
     rounded-xl
     p-2
     shadow-md shadow-[#0C2B4E]/10
-    cursor-pointer
   `,
 
   recThumbnail: `
@@ -158,6 +160,35 @@ export default function Watch() {
   const [videoDetails, setVideoDetails] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const saveWatchHistory = (video, channelImage) => {
+
+    if (!video) return
+
+    const entry = {
+      id: video.id,
+      title: video.snippet.title,
+      description: video.snippet.description,
+      channelTitle: video.snippet.channelTitle,
+      thumbnail: video.snippet.thumbnails.high.url,
+      channelImage,
+      watchedAt: Date.now()
+    }
+
+    const existing =
+      JSON.parse(localStorage.getItem(WATCH_HISTORY_KEY)) || []
+
+    const filtered =
+      existing.filter(item => item.id !== entry.id)
+
+    const updated =
+      [entry, ...filtered].slice(0, MAX_HISTORY)
+
+    localStorage.setItem(
+      WATCH_HISTORY_KEY,
+      JSON.stringify(updated)
+    )
+  }
+
   useEffect(() => {
 
     const fetchVideoAndChannel = async () => {
@@ -184,12 +215,16 @@ export default function Watch() {
 
         const channel = channelData.items[0]
 
-        setVideoDetails({
+        const details = {
           title: video.snippet.title,
           description: video.snippet.description,
           channelTitle: video.snippet.channelTitle,
           channelImage: channel.snippet.thumbnails.default.url
-        })
+        }
+
+        setVideoDetails(details)
+
+        saveWatchHistory(video, details.channelImage)
 
       } finally {
 
@@ -204,8 +239,8 @@ export default function Watch() {
 
   const embedUrl =
     `https://www.youtube.com/embed/${id}` +
-    `?controls=1` +
-    `&autoplay=1`+
+    `?autoplay=1` +
+    `&controls=1` +
     `&color=white` +
     `&rel=0` +
     `&playsinline=1` +
@@ -221,22 +256,26 @@ export default function Watch() {
             <div className={styles.shimmerFrame}></div>
 
             <div className={styles.metaCard}>
+
               <div className={styles.shimmerTextLarge}></div>
 
               <div className={styles.channelRow}>
                 <div className={styles.shimmerCircle}></div>
                 <div className={styles.shimmerTextSmall}></div>
               </div>
+
             </div>
           </>
         ) : (
           <>
             <div className={styles.playerFrame}>
+
               <iframe
                 className={styles.iframe}
                 src={embedUrl}
                 allowFullScreen
               />
+
             </div>
 
             <div className={styles.metaCard}>
@@ -246,7 +285,7 @@ export default function Watch() {
               </div>
 
               <div className={styles.channelRow}>
-                
+
                 <img
                   src={videoDetails?.channelImage}
                   className={styles.profileImage}
@@ -271,6 +310,7 @@ export default function Watch() {
       <div className={styles.sidebar}>
 
         {Array(8).fill(0).map((_, index) => (
+
           <div key={index} className={styles.recommendationCard}>
 
             <div className={styles.recThumbnail}></div>
@@ -281,6 +321,7 @@ export default function Watch() {
             </div>
 
           </div>
+
         ))}
 
       </div>
