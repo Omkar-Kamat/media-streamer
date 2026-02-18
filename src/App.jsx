@@ -1,5 +1,6 @@
 import Layout from "./Layout"
 import Home from "./pages/Home"
+import HomeScroll from "./pages/HomeScroll"
 import Watch from "./pages/Watch"
 import Upload from "./pages/Upload"
 import Profile from "./pages/Profile"
@@ -11,7 +12,7 @@ export default function App() {
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Home/>}/>
+        <Route path="/" element={<HomeScroll/>}/>
         <Route path="/trending" element={<Trending/>}/>
         <Route path="/watch/:id" element={<Watch/>}/>
         <Route path="/upload" element={<Upload/>}/>

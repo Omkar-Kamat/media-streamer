@@ -1,5 +1,13 @@
 import React from "react"
 import { Link, useLocation } from "react-router-dom"
+import {
+  Home,
+  TrendingUp,
+  History,
+  Upload,
+  User,
+  Menu
+} from "lucide-react"
 
 const styles = {
   sidebar: `
@@ -12,26 +20,20 @@ const styles = {
     flex-shrink-0
   `,
 
-  expanded: `
-    w-56 sm:w-64
-  `,
+  expanded: `w-56 sm:w-64`,
 
-  collapsed: `
-    w-16
-  `,
+  collapsed: `w-16`,
 
   toggleContainer: `
     flex items-center justify-end
-    h-14
-    px-3
+    h-14 px-3
   `,
 
   toggleButton: `
     text-[#F4F4F4]
     bg-[#1A3D64]/40
     hover:bg-[#1D546C]
-    hover:shadow-md hover:shadow-[#0C2B4E]/40
-    px-2 py-1
+    p-2
     rounded-lg
     cursor-pointer
     transition-all duration-200
@@ -46,15 +48,13 @@ const styles = {
 
   tab: `
     flex items-center
+    gap-3
     px-3 py-3
     rounded-xl
     text-[#F4F4F4]
     hover:bg-[#1A3D64]
-    hover:shadow-md hover:shadow-[#0C2B4E]/30
     cursor-pointer
     transition-all duration-200
-    whitespace-nowrap
-    overflow-hidden
   `,
 
   activeTab: `
@@ -62,18 +62,17 @@ const styles = {
     shadow-inner shadow-black/30
   `,
 
+  icon: `
+    flex-shrink-0
+  `,
+
   label: `
     text-sm font-medium
     tracking-wide
   `,
 
-  hiddenLabel: `
-    hidden
-  `,
-
-  visibleLabel: `
-    block
-  `
+  hiddenLabel: `hidden`,
+  visibleLabel: `block`
 }
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -81,28 +80,30 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation()
 
   const tabs = [
-    { name: "Home", path: "/" },
-    { name: "Trending", path: "/trending" },
-    { name: "Watch History", path: "/watch-history"},
-    { name: "Upload", path: "/upload" },
-    { name: "Profile", path: "/profile" }
+    { name: "Home", path: "/", icon: Home },
+    { name: "Trending", path: "/trending", icon: TrendingUp },
+    { name: "Watch History", path: "/watch-history", icon: History },
+    { name: "Upload", path: "/upload", icon: Upload },
+    { name: "Profile", path: "/profile", icon: User }
   ]
 
   return (
     <div className={`${styles.sidebar} ${isOpen ? styles.expanded : styles.collapsed}`}>
-      
+
       <div className={styles.toggleContainer}>
         <div
           className={styles.toggleButton}
           onClick={() => setIsOpen(!isOpen)}
         >
-          ☰
+          <Menu size={20} />
         </div>
       </div>
 
       <div className={styles.tabContainer}>
+
         {tabs.map((tab, index) => {
 
+          const Icon = tab.icon
           const isActive = location.pathname === tab.path
 
           return (
@@ -111,12 +112,21 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               to={tab.path}
               className={`${styles.tab} ${isActive ? styles.activeTab : ""}`}
             >
-              <div className={`${styles.label} ${isOpen ? styles.visibleLabel : styles.hiddenLabel}`}>
+
+              <Icon size={20} className={styles.icon} />
+
+              <span
+                className={`${styles.label} ${
+                  isOpen ? styles.visibleLabel : styles.hiddenLabel
+                }`}
+              >
                 {tab.name}
-              </div>
+              </span>
+
             </Link>
           )
         })}
+
       </div>
 
     </div>

@@ -44,7 +44,7 @@ export default function useRelatedVideos(videoTitle) {
               videoTitle: video.snippet.title,
               channelTitle: video.snippet.channelTitle,
               thumbnail: video.snippet.thumbnails.high.url,
-              viewCount: ""
+              viewCount: video.statistics?.viewCount || "0"
             }))
 
         setVideos(formattedVideos)
