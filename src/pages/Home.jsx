@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react"
 import VideoGrid from "../components/VideoGrid"
+import Pagination from "../components/Pagination"
 
 const styles = {
   container: `
     w-full
     min-h-full
     bg-[#F4F4F4]
+    flex flex-col
   `,
+
   error: `
     text-red-600
     text-lg
@@ -21,6 +24,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
+  const [tokens, setTokens] = useState([null])
+  const [nextToken, setNextToken] = useState(null)
+
+  const currentToken = tokens[tokens.length - 1]
+
   useEffect(() => {
 
     const fetchVideos = async () => {
@@ -28,10 +36,18 @@ export default function Home() {
       try {
 
         setLoading(true)
+        setError(null)
 
-        const res = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&regionCode=US&maxResults=16&key=${import.meta.env.VITE_YT_API_KEY}`
-        )
+        const url =
+          `https://www.googleapis.com/youtube/v3/videos` +
+          `?part=snippet,statistics` +
+          `&chart=mostPopular` +
+          `&regionCode=US` +
+          `&maxResults=16` +
+          `${currentToken ? `&pageToken=${currentToken}` : ""}` +
+          `&key=${import.meta.env.VITE_YT_API_KEY}`
+
+        const res = await fetch(url)
 
         const data = await res.json()
 
@@ -49,6 +65,8 @@ export default function Home() {
 
         setVideos(formattedVideos)
 
+        setNextToken(data.nextPageToken || null)
+
       } catch (err) {
 
         setError(err.message)
@@ -62,7 +80,21 @@ export default function Home() {
 
     fetchVideos()
 
-  }, [])
+  }, [currentToken])
+
+  const handleNext = () => {
+
+    if (!nextToken) return
+
+    setTokens(prev => [...prev, nextToken])
+  }
+
+  const handlePrev = () => {
+
+    if (tokens.length <= 1) return
+
+    setTokens(prev => prev.slice(0, -1))
+  }
 
   return (
     <div className={styles.container}>
@@ -76,6 +108,14 @@ export default function Home() {
       <VideoGrid
         videos={videos}
         loading={loading}
+      />
+
+      <Pagination
+        hasPrev={tokens.length > 1}
+        hasNext={!!nextToken}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        page={tokens.length}
       />
 
     </div>
