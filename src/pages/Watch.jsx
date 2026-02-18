@@ -342,8 +342,9 @@ export default function Watch() {
               </div>
 
             ))
-          : relatedVideos.map(video => (
-
+          : relatedVideos?.map(video =>{
+              console.log(video);
+            return (
               <Link
                 key={video.id}
                 to={`/watch/${video.id}`}
@@ -369,7 +370,7 @@ export default function Watch() {
 
               </Link>
 
-            ))
+            )})
         }
 
       </div>

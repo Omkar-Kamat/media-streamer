@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 
 export default function useRelatedVideos(videoTitle) {
 
-  const [videos, setVideos] = useState([null])
+  const [videos, setVideos] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -29,31 +29,32 @@ export default function useRelatedVideos(videoTitle) {
           `&key=${import.meta.env.VITE_YT_API_KEY}`
 
         const res = await fetch(url)
-
         const data = await res.json()
 
         if (!res.ok) {
-          throw new Error(data.error?.message || "Failed to fetch related videos")
+          throw new Error(data.error?.message)
         }
 
         const formattedVideos =
           data.items
-            .slice(1)
+            .slice(1) // skip first video
             .map(video => ({
               id: video.id.videoId,
               videoTitle: video.snippet.title,
               channelTitle: video.snippet.channelTitle,
-              thumbnail: video.snippet.thumbnails.high.url,
-              viewCount: video.statistics?.viewCount || "0"
+              thumbnail: video.snippet.thumbnails.high.url
             }))
 
         setVideos(formattedVideos)
 
-      } catch (err) {
+      }
+      catch (err) {
 
         setError(err.message)
+        setVideos([])
 
-      } finally {
+      }
+      finally {
 
         setLoading(false)
 
